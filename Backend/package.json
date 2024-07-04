@@ -1,0 +1,28 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "This is the backend for the AO3 project ",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GDGVIT/ao3-chrome-extension-backend.git"
+  },
+  "keywords": [
+    "AO3"
+  ],
+  "author": "Varshith Kumar",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/GDGVIT/ao3-chrome-extension-backend/issues"
+  },
+  "homepage": "https://github.com/GDGVIT/ao3-chrome-extension-backend#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
