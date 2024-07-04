@@ -1,0 +1,10 @@
+Run the following sql commands to setup the database
+
+CREATE TABLE login(
+	id SERIAL PRIMARY KEY,
+	username text,
+	email text NOT NULL,
+	password text NOT NULL,
+	token text,
+	verified text default 'false'
+);
