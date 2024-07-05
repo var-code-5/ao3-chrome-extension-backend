@@ -13,20 +13,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const views_path = path.join(__dirname, "..", "views");
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.ethereal.email',
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  host: 'smtp.gmail.com',
   port: 587,
+  secure: false, // true for 465, false for other ports
   auth: {
-      user: process.env.MAIL_ADDRESS,
-      pass: process.env.MAIL_PASSWORD
+    user: process.env.MAIL_ADDRESS,
+    pass: process.env.MAIL_PASSWORD
   }
 });
 
 async function verifyMail(email,token) {
   // send mail with defined above transport object
-  console.log(process.env.MAIL_ADDRESS);
-  console.log(process.env.MAIL_PASSWORD);
-  const link = 'localhost:3000/auth/token/'+token;
+  const link = 'http://localhost:3000/auth/token/'+token;
   const info = await transporter.sendMail({
     from: '"AO3" <ao3gdsc@gmail.com>', // sender address
     to: email, // user email address
@@ -115,6 +115,9 @@ export const get_token = (req,res) => {
       return;
     }
     res.send("Token is valid");
+    db.query("UPDATE login SET verified = true WHERE email = $1;",[decoded.email])
+    // res.redirect("/login");
     //add refresh token logic
   });
 };
+
