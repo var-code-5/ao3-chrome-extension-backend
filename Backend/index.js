@@ -11,6 +11,7 @@ const app = express();
 // middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/auth", auth);
+app.use(express.json());
 
 //the following will be redirected to the dashboard for now to the login page
 app.get("/", (req, res) => {

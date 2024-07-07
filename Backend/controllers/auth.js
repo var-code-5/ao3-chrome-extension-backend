@@ -8,7 +8,6 @@ import jwt from 'jsonwebtoken';
 
 env.config();
 
-const saltRounds = 10;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const views_path = path.join(__dirname, "..", "views");
@@ -31,7 +30,7 @@ async function verifyMail(email,token) {
     from: '"AO3" <ao3gdsc@gmail.com>', // sender address
     to: email, // user email address
     subject: "Conform Your Mail Account", // Subject line
-    html: `to activate your account please follow the link <b><a>${link}</a></b> you will be redirected to AO3 website after this </br> <b>Note : this link will expire in one hour</b>`, // html body
+    html: `to activate your account please follow the link <a><b>${link}</b></a> you will be redirected to AO3 website after this </br> <b>Note : this link will expire in one hour</b>`, // html body
   });
 }
 
@@ -49,7 +48,7 @@ export const post_login = (req, res) => {
       return;
     }
     if (result.rows.length === 0) {
-      res.status(401).send("Invalid credentials");
+      res.status(401).send("User does not exist");
       return;
     }
     const user = result.rows[0];
@@ -62,6 +61,7 @@ export const post_login = (req, res) => {
     res.send("authSuccess");
     res.redirect("/dashboard");
   });
+  db.end();
 };
 
 export const post_register = (req, res) => {
@@ -79,32 +79,25 @@ export const post_register = (req, res) => {
       res.status(409).send("Email already exists");
       return;
     }
-    // if he dosen't Store in database
+    // if user dosen't exist
     else{
-      bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send("Server error");
-        return;
-      }
       db.query(
         "INSERT INTO login (username,email,password) VALUES($1,$2,$3)",
-        [username, email, hashedPassword],
+        [username, email, password],
         (err, result) => {
           if (err) {
             console.error(err);
             res.status(500).send("Server error");
             return;
           }
-
           res.send("Registration successful");
           // Node mailer will send mail to the user
           verifyMail(email,jwt.sign({'email':email},process.env.ACESS_TOKEN_SECRET,{expiresIn:'1h'}));
         }
         );
-      });
     }
   });
+  db.end();
 }
 
 export const get_token = (req,res) => {
