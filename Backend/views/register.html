@@ -108,7 +108,12 @@
       <div class="signup">
         <form action="/auth/register" method="post">
           <label for="chk" aria-hidden="true">Sign up</label>
-          <input type="text" name="username" placeholder="User name" required="" />
+          <input
+            type="text"
+            name="username"
+            placeholder="User name"
+            required=""
+          />
           <input type="email" name="email" placeholder="Email" required="" />
           <input
             type="password"
@@ -120,8 +125,8 @@
         </form>
       </div>
 
-      <div class="login" action="/auth/login" method="post">
-        <form>
+      <div class="login">
+        <form action="/auth/login" method="post">
           <label for="chk" aria-hidden="true">Login</label>
           <input type="email" name="email" placeholder="Email" required="" />
           <input

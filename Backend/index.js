@@ -2,6 +2,8 @@ import express from "express";
 import env from "dotenv";
 import auth from "./routes/auth.js";
 import bodyParser from "body-parser";
+import cookieParser from 'cookie-parser';
+
 
 env.config();
 
@@ -12,6 +14,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/auth", auth);
 app.use(express.json());
+app.use(cookieParser());
 
 //the following will be redirected to the dashboard for now to the login page
 app.get("/", (req, res) => {

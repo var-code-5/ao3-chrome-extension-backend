@@ -2,9 +2,9 @@ import path from "path";
 import { fileURLToPath } from "url";
 import db from "../models/pgsql.js";
 import bcrypt from "bcrypt";
-import nodemailer from 'nodemailer';
-import env from 'dotenv';
-import jwt from 'jsonwebtoken';
+import nodemailer from "nodemailer";
+import env from "dotenv";
+import jwt from "jsonwebtoken";
 
 env.config();
 
@@ -13,19 +13,37 @@ const __dirname = path.dirname(__filename);
 const views_path = path.join(__dirname, "..", "views");
 
 var transporter = nodemailer.createTransport({
-  service: 'gmail',
-  host: 'smtp.gmail.com',
+  service: "gmail",
+  host: "smtp.gmail.com",
   port: 587,
   secure: false, // true for 465, false for other ports
   auth: {
     user: process.env.MAIL_ADDRESS,
-    pass: process.env.MAIL_PASSWORD
-  }
+    pass: process.env.MAIL_PASSWORD,
+  },
 });
 
-async function verifyMail(email,token) {
+function generateAcessToken(id) {
+  const token = jwt.sign({ id: id }, process.env.ACESS_TOKEN_SECRET, {
+    expiresIn: "1h",
+  });
+  return token;
+}
+
+function generateRefreshToken(email,name) {
+  const refreshToken = jwt.sign(
+    { "email": email ,
+      "name" : name
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: "15d" }
+  );
+  return refreshToken;
+}
+
+async function verifyMail(email, token) {
   // send mail with defined above transport object
-  const link = 'http://localhost:3000/auth/token/'+token;
+  const link = "http://localhost:3000/auth/token/" + token;
   const info = await transporter.sendMail({
     from: '"AO3" <ao3gdsc@gmail.com>', // sender address
     to: email, // user email address
@@ -56,12 +74,23 @@ export const post_login = (req, res) => {
       res.status(401).send("Invalid credentials");
       return;
     }
+    if (result.rows[0].verified =='false') {
+      res.status(403).send("Please verify your mail address");
+      verifyMail(email,
+        jwt.sign({ "email": email }, process.env.ACESS_TOKEN_SECRET, {
+          expiresIn: "1h",
+        }));
+      return;
+    }
     //auth sucess
     //add jwt token logic here
-    res.send("authSuccess");
-    res.redirect("/dashboard");
+    const token = generateAcessToken(result.rows[0].id);
+    const refreshToken = generateRefreshToken(email, result.rows[0].username);
+    res.cookie("refreshToken", refreshToken, { httpOnly: true });
+    res.cookie("token", token, { httpOnly: true });
+    res.send("sucessful authentication");
+    // res.redirect("/dashboard");
   });
-  db.end();
 };
 
 export const post_register = (req, res) => {
@@ -73,14 +102,13 @@ export const post_register = (req, res) => {
     if (err) {
       console.error(err);
       res.status(500).send("Server error");
-      return; 
-    }
-    else if (result.rowCount !== 0) {
+      return;
+    } else if (result.rowCount !== 0) {
       res.status(409).send("Email already exists");
       return;
     }
     // if user dosen't exist
-    else{
+    else {
       db.query(
         "INSERT INTO login (username,email,password) VALUES($1,$2,$3)",
         [username, email, password],
@@ -92,25 +120,30 @@ export const post_register = (req, res) => {
           }
           res.send("Registration successful");
           // Node mailer will send mail to the user
-          verifyMail(email,jwt.sign({'email':email},process.env.ACESS_TOKEN_SECRET,{expiresIn:'1h'}));
+          verifyMail(
+            email,
+            jwt.sign({ "email": email }, process.env.ACESS_TOKEN_SECRET, {
+              expiresIn: "1h",
+            })
+          );
         }
-        );
+      );
     }
   });
-  db.end();
-}
+};
 
-export const get_token = (req,res) => {
+export const get_token = (req, res) => {
   const token = req.params.token;
   jwt.verify(token, process.env.ACESS_TOKEN_SECRET, (err, decoded) => {
     if (err) {
       res.status(403).send("Token is not valid");
       return;
+    } else {
+      db.query("UPDATE login SET verified = true WHERE email = $1;", [
+        decoded.email,
+      ]);
+      res.redirect("/auth/login");
+      //add refresh token logic
     }
-    res.send("Token is valid");
-    db.query("UPDATE login SET verified = true WHERE email = $1;",[decoded.email])
-    // res.redirect("/login");
-    //add refresh token logic
   });
 };
-
