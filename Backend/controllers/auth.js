@@ -23,8 +23,8 @@ var transporter = nodemailer.createTransport({
   },
 });
 
-function generateAcessToken(id) {
-  const token = jwt.sign({ id: id }, process.env.ACESS_TOKEN_SECRET, {
+function generateAcessToken(id,username) {
+  const token = jwt.sign({ "id": id , "username":username}, process.env.ACESS_TOKEN_SECRET, {
     expiresIn: "1h",
   });
   return token;
@@ -33,7 +33,7 @@ function generateAcessToken(id) {
 function generateRefreshToken(email,name,id) {
   const refreshToken = jwt.sign(
     { "email": email ,
-      "name" : name ,
+      "username" : name ,
       "id" : id 
     },
     process.env.REFRESH_TOKEN_SECRET,
@@ -85,7 +85,7 @@ export const post_login = (req, res) => {
     }
     //auth sucess
     //add jwt token logic here
-    const token = generateAcessToken(result.rows[0].id);
+    const token = generateAcessToken(result.rows[0].id, result.rows[0].username);
     const refreshToken = generateRefreshToken(email, result.rows[0].username,result.rows[0].id);
     res.cookie("refreshToken", refreshToken, { httpOnly: true });
     res.cookie("token", token, { httpOnly: true });
