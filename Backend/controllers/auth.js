@@ -30,10 +30,11 @@ function generateAcessToken(id) {
   return token;
 }
 
-function generateRefreshToken(email,name) {
+function generateRefreshToken(email,name,id) {
   const refreshToken = jwt.sign(
     { "email": email ,
-      "name" : name
+      "name" : name ,
+      "id" : id 
     },
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: "15d" }
@@ -43,12 +44,12 @@ function generateRefreshToken(email,name) {
 
 async function verifyMail(email, token) {
   // send mail with defined above transport object
-  const link = "http://localhost:3000/auth/token/" + token;
+  const link = "https://ao3-chrome-extension-backend.onrender.com/auth/token/" + token;
   const info = await transporter.sendMail({
     from: '"AO3" <ao3gdsc@gmail.com>', // sender address
     to: email, // user email address
     subject: "Conform Your Mail Account", // Subject line
-    html: `to activate your account please follow the link <a><b>${link}</b></a> you will be redirected to AO3 website after this </br> <b>Note : this link will expire in one hour</b>`, // html body
+    html: `to activate your account please follow the link <a>${link}</a> you will be redirected to AO3 website after this </br> <b>Note : this link will expire in one hour</b>`, // html body
   });
 }
 
@@ -85,10 +86,10 @@ export const post_login = (req, res) => {
     //auth sucess
     //add jwt token logic here
     const token = generateAcessToken(result.rows[0].id);
-    const refreshToken = generateRefreshToken(email, result.rows[0].username);
+    const refreshToken = generateRefreshToken(email, result.rows[0].username,result.rows[0].id);
     res.cookie("refreshToken", refreshToken, { httpOnly: true });
     res.cookie("token", token, { httpOnly: true });
-    res.send("sucessful authentication");
+    res.status(200).send({"msg":"sucessful authentication"});
     // res.redirect("/dashboard");
   });
 };
@@ -142,7 +143,8 @@ export const get_token = (req, res) => {
       db.query("UPDATE login SET verified = true WHERE email = $1;", [
         decoded.email,
       ]);
-      res.redirect("/auth/login");
+      //sucessful verification of email
+      res.status(200).send({"msg":"verified email"});
       //add refresh token logic
     }
   });

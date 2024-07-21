@@ -22,6 +22,3 @@ export const hashPassword = async (req, res, next) => {
     req.body.password = await generateHash(password);
     next();
 };
-
-
-
