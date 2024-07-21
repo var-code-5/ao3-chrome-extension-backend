@@ -20,8 +20,8 @@ app.use(cookieParser());
 
 //the following will be redirected to the dashboard for now to the login page
 app.get("/", (req, res) => {
-  // res.redirect("/auth/login");
-  res.status(200).send({"msg":"home route"})
+  res.redirect("/auth/login");
+  // res.status(200).send({"msg":"home route"})
 });
 
 app.listen(port, () => {

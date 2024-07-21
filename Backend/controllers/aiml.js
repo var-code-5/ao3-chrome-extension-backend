@@ -4,7 +4,7 @@ import env from 'dotenv';
 env.config()
 
 export const get_recommendations = (req, res) =>{
-    const url = process.env.AIML_URL+req.body.ao3_user;
+    const url = process.env.AIML_URL.concat(req.body.ao3_user);
     console.log(url);
     axios.get(url)
     .then(response => {
