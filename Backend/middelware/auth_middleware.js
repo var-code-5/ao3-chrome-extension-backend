@@ -8,7 +8,7 @@ const generateHash = async (password) => {
 //regex pattern matching
 export const hashPassword = async (req, res, next) => {
     const password = req.body.password;
-    const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
+    const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,20}$/;
     if (!pattern.test(password)) {
       return res.status(400).json({
         success: false,
