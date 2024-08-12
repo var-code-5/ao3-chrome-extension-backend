@@ -53,45 +53,46 @@ async function verifyMail(email, token) {
   });
 }
 
-export const get_login = (req, res) => {
-  res.sendFile(path.join(views_path, "register.html"));
-};
-
-export const post_login = (req, res) => {
-  const email = req.body.email;
+export const post_login = async (req, res) => {
   const password = req.body.password;
-  db.query("SELECT * FROM login WHERE email = $1", [email], (err, result) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Server error");
-      return;
-    }
+  const email = req.body.email;
+  
+  try {
+    await db.connect();
+    const result = await db.query("SELECT * FROM login WHERE email = $1", [email]);
+
     if (result.rows.length === 0) {
       res.status(401).send("User does not exist");
       return;
     }
-    const user = result.rows[0];
-    if (!bcrypt.compare(password, result.rows[0].password)) {
+
+    const match = await bcrypt.compare(password, result.rows[0].password);
+    if (!match) {
       res.status(401).send("Invalid credentials");
       return;
     }
-    if (result.rows[0].verified =='false') {
+
+    if (result.rows[0].verified == "false") {
       res.status(403).send("Please verify your mail address");
-      verifyMail(email,
+      verifyMail(
+        email,
         jwt.sign({ "email": email }, process.env.ACESS_TOKEN_SECRET, {
-          expiresIn: "1h",
-        }));
+                    expiresIn: "1h",
+                  }));
       return;
     }
-    //auth sucess
-    //add jwt token logic here
+
+    //auth success
     const token = generateAcessToken(result.rows[0].id, result.rows[0].username);
     const refreshToken = generateRefreshToken(email, result.rows[0].username,result.rows[0].id);
     res.cookie("refreshToken", refreshToken, { httpOnly: true });
     res.cookie("token", token, { httpOnly: true });
     res.status(200).send({"msg":"sucessful authentication"});
-    // res.redirect("/dashboard");
-  });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
 };
 
 export const post_register = (req, res) => {
