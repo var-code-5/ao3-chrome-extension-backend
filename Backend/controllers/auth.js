@@ -49,7 +49,7 @@ async function verifyMail(email, token) {
     from: '"AO3" <ao3gdsc@gmail.com>', // sender address
     to: email, // user email address
     subject: "Conform Your Mail Account", // Subject line
-    html: `to activate your account please follow the link <a href="${link} target="_blank">${link}</a> you will be redirected to AO3 website after this </br> <b>Note : this link will expire in one hour</b>`, // html body
+    html: `to activate your account please follow the link <a href="${link}>${link}</a> you will be redirected to AO3 website after this </br> <b>Note : this link will expire in one hour</b>`, // html body
   });
 }
 
