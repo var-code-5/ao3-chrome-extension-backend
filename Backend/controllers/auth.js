@@ -127,7 +127,9 @@ export const post_register = (req, res) => {
             res.status(500).send("Server error");
             return;
           }
-          res.send("Registration successful");
+          res.send({"sucess":"true",
+            "msg":"Check your email"
+          });
           // Node mailer will send mail to the user
           verifyMail(
             email,
