@@ -11,6 +11,7 @@ router.use(bodyParser.urlencoded({extended: true}));
 router.post("/login", func.post_login);
 router.post("/register", hashPassword ,func.post_register);
 router.get("/token/:token", func.get_token);
+router.post("/logout", func.post_logout);
 
 
 export default router;

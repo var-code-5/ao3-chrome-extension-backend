@@ -159,3 +159,9 @@ export const get_token = (req, res) => {
     }
   });
 };
+
+export const post_logout = (req, res) => {
+  res.clearCookie("token");
+  res.clearCookie("refreshToken");
+  res.status(200).send({"msg":"logged out"});
+};
