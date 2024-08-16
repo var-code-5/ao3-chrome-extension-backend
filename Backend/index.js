@@ -4,7 +4,7 @@ import auth from "./routes/auth.js";
 import aiml from "./routes/aiml.js";
 import bodyParser from "body-parser";
 import cookieParser from 'cookie-parser';
-
+import cors from 'cors';
 
 env.config();
 
@@ -12,6 +12,11 @@ const port = process.env.PORT || 3000;
 const app = express();
 
 // middleware
+app.use(cors({
+  origin: "*",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: "Content-Type,Authorization"
+}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/auth", auth);
 app.use(aiml);
