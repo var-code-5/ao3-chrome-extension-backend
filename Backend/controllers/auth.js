@@ -90,8 +90,8 @@ export const post_login = async (req, res) => {
     const token = generateAcessToken(user.id, user.username);
     const refreshToken = generateRefreshToken(email, user.username, user.id);
     
-    res.cookie("refreshToken", refreshToken, {path: '/', httpOnly: true });
-    res.cookie("token", token, { path: '/',httpOnly: true });
+    res.cookie("refreshToken", refreshToken, {path: '/', httpOnly: false,sameSite: 'Lax'  });
+    res.cookie("token", token, { path: '/',httpOnly: false,sameSite: 'Lax'  });
     
     res.status(200).send({ "msg": "successful authentication" });
     // res.redirect("/dashboard");
@@ -177,7 +177,7 @@ export const post_verify = (req, res) => {
           return;
         }
         const token = generateAcessToken(user.id, user.username);
-        res.cookie("token", token, { path: '/',httpOnly: true });
+        res.cookie("token", token, { path: '/',httpOnly: false,sameSite: 'Lax' });
         res.status(200).send({"isValid":"true"});
       });
     }
