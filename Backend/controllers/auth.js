@@ -165,3 +165,24 @@ export const post_logout = (req, res) => {
   res.clearCookie("refreshToken");
   res.status(200).send({"msg":"logged out"});
 };
+
+export const post_verify = (req, res) => {
+  const access = req.body.access;
+  const refresh = req.body.refresh;
+  jwt.verify(access, process.env.ACESS_TOKEN_SECRET,(err,decoded)=>{
+    if(err){
+      jwt.verify(refresh, process.env.REFRESH_TOKEN_SECRET,(err,decoded)=>{
+        if(err){
+          res.status(403).send({"isValid":"false","message":"token expired"});
+          return;
+        }
+        const token = generateAcessToken(user.id, user.username);
+        res.cookie("token", token, { httpOnly: true });
+        res.status(200).send({"isValid":"true"});
+      });
+    }
+    else{
+      res.status(200).send({"isValid":"true"});
+    }
+  });
+};
