@@ -93,6 +93,9 @@ export const post_login = async (req, res) => {
     res.cookie("refreshToken", refreshToken, {path: '/', httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:true });
     res.cookie("token", token, { path: '/',httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:true });
     
+    res.cookie("refreshToken", refreshToken, {path: '/dashboard', httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:true });
+    res.cookie("token", token, { path: '/dashboard',httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:true });
+
     res.status(200).send({ "msg": "successful authentication" });
     // res.redirect("/dashboard");
   } catch (err) {
