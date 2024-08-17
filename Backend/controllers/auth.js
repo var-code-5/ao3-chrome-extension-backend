@@ -90,11 +90,11 @@ export const post_login = async (req, res) => {
     const token = generateAcessToken(user.id, user.username);
     const refreshToken = generateRefreshToken(email, user.username, user.id);
     
-    res.cookie("refreshToken", refreshToken, {path: '/', httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:true });
-    res.cookie("token", token, { path: '/',httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:true });
+    res.cookie("refreshToken", refreshToken, {path: '/', httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:false });
+    res.cookie("token", token, { path: '/',httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:false });
     
-    res.cookie("refreshToken", refreshToken, {path: '/dashboard', httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:true });
-    res.cookie("token", token, { path: '/dashboard',httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:true });
+    res.cookie("refreshToken", refreshToken, {path: '/dashboard', httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:false });
+    res.cookie("token", token, { path: '/dashboard',httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:false });
 
     res.status(200).send({ "msg": "successful authentication" });
     // res.redirect("/dashboard");
@@ -180,7 +180,7 @@ export const post_verify = (req, res) => {
           return;
         }
         const token = generateAcessToken(user.id, user.username);
-        res.cookie("token", token, { path: '/',httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:true});
+        res.cookie("token", token, { path: '/',httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:false});
         res.status(200).send({"isValid":"true"});
       });
     }
