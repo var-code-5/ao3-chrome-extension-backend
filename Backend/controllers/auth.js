@@ -66,7 +66,7 @@ export const post_login = async (req, res) => {
     const result = await db.query("SELECT * FROM login WHERE email = $1", [email]);
     
     if (result.rows.length === 0) {
-      res.status(401).send("User does not exist");
+      res.status(401).json({meassage:"User does not exist"});
       return;
     }
     
@@ -75,13 +75,13 @@ export const post_login = async (req, res) => {
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      res.status(401).send("Invalid credentials");
+      res.status(401).json({meassage:"Invalid credentials"});
       return;
     }
     
     // Check if user is verified
     if (user.verified === 'false') {
-      res.status(403).send("Please verify your mail address");
+      res.status(403).json({message:"Please verify your mail address"});
       verifyMail(email, jwt.sign({ "email": email }, process.env.ACESS_TOKEN_SECRET, { expiresIn: "1h" }));
       return;
     }
@@ -90,17 +90,17 @@ export const post_login = async (req, res) => {
     const token = generateAcessToken(user.id, user.username);
     const refreshToken = generateRefreshToken(email, user.username, user.id);
     
-    res.cookie("refreshToken", refreshToken, {path: '/', httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:false });
-    res.cookie("token", token, { path: '/',httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:false });
+    // res.cookie("refreshToken", refreshToken, {path: '/', httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:false });
+    // res.cookie("token", token, { path: '/',httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:false });
     
-    res.cookie("refreshToken", refreshToken, {path: '/dashboard', httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:false });
-    res.cookie("token", token, { path: '/dashboard',httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:false });
+    // res.cookie("refreshToken", refreshToken, {path: '/dashboard', httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:false });
+    // res.cookie("token", token, { path: '/dashboard',httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:false });
 
-    res.status(200).send({ "msg": "successful authentication" });
+    res.status(200).json({ accessToken: token,refreshToken: refreshToken });
     // res.redirect("/dashboard");
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server error");
+    res.status(500).json({message:"Server error"});
   }
 };
 
@@ -113,10 +113,10 @@ export const post_register = (req, res) => {
   db.query("SELECT * FROM login WHERE email = $1", [email], (err, result) => {
     if (err) {
       console.error(err);
-      res.status(500).send("Server error");
+      res.status(500).json({message:"Server error"});
       return;
     } else if (result.rowCount !== 0) {
-      res.status(409).send("Email already exists");
+      res.status(409).json({message:"Email already exists"});
       return;
     }
     // if user dosen't exist
@@ -127,10 +127,10 @@ export const post_register = (req, res) => {
         (err, result) => {
           if (err) {
             console.error(err);
-            res.status(500).send("Server error");
+            res.status(500).json({message:"Server error"});
             return;
           }
-          res.send({"sucess":"true",
+          res.status(200).json({"sucess":"true",
             "msg":"Check your email"
           });
           // Node mailer will send mail to the user
@@ -150,42 +150,20 @@ export const get_token = (req, res) => {
   const token = req.params.token;
   jwt.verify(token, process.env.ACESS_TOKEN_SECRET, (err, decoded) => {
     if (err) {
-      res.status(403).send("Token is not valid");
+      res.status(403).json({message:"Token is not valid"});
       return;
     } else {
       db.query("UPDATE login SET verified = true WHERE email = $1;", [
         decoded.email,
       ]);
       //sucessful verification of email
-      res.status(200).send({"msg":"verified email"});
+      res.status(200).json({message:"verified email"});
       //add refresh token logic
     }
   });
 };
 
-export const post_logout = (req, res) => {
-  res.clearCookie("token");
-  res.clearCookie("refreshToken");
-  res.status(200).send({"msg":"logged out"});
-};
 
-export const post_verify = (req, res) => {
-  const access = req.body.access;
-  const refresh = req.body.refresh;
-  jwt.verify(access, process.env.ACESS_TOKEN_SECRET,(err,decoded)=>{
-    if(err){
-      jwt.verify(refresh, process.env.REFRESH_TOKEN_SECRET,(err,decoded)=>{
-        if(err){
-          res.status(403).send({"isValid":"false","message":"token expired"});
-          return;
-        }
-        const token = generateAcessToken(user.id, user.username);
-        res.cookie("token", token, { path: '/',httpOnly: false,sameSite: 'lax',maxAge:30 * 24 * 60 * 60 * 1000 , secure:false});
-        res.status(200).send({"isValid":"true"});
-      });
-    }
-    else{
-      res.status(200).send({"isValid":"true"});
-    }
-  });
+export const get_verify = (req, res) => {
+  res.json({message:"success"});
 };
