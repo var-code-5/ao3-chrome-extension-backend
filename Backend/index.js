@@ -13,7 +13,7 @@ const app = express();
 
 // middleware
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://ao3-chrome-extension-website.vercel.app/",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   // allowedHeaders: "Content-Type,Authorization",
   credentials: true
