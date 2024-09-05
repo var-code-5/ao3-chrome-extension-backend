@@ -12,12 +12,24 @@ const port = process.env.PORT || 3000;
 const app = express();
 
 // middleware
+const allowedOrigins = [
+  "https://ao3-chrome-extension-website.vercel.app",
+  "https://localhost:5173" // only for dev env
+];
+
 app.use(cors({
-  origin: "https://ao3-chrome-extension-website.vercel.app/",
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   // allowedHeaders: "Content-Type,Authorization",
   credentials: true
 }));
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/auth", auth);
 app.use(aiml);
