@@ -15,6 +15,8 @@ const app = express();
 var whitelist = [
   "https://ao3-chrome-extension-website.vercel.app/",
   "chrome-extension://nnmmeljlhmhpnfphcpifdahblfmhlilm",
+  "http://localhost:5173",
+  "http://localhost:5174"
 ];
 var corsOptions = {
   origin: function (origin, callback) {
