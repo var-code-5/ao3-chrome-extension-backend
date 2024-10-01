@@ -12,23 +12,23 @@ const port = process.env.PORT || 3000;
 const app = express();
 
 // middleware
-var whitelist = [
-  "https://ao3-chrome-extension-website.vercel.app/",
-  "chrome-extension://nnmmeljlhmhpnfphcpifdahblfmhlilm",
-  "http://localhost:5173",
-  "http://localhost:5174"
-];
-var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-};
+// var whitelist = [
+//   "https://ao3-chrome-extension-website.vercel.app/",
+//   "chrome-extension://nnmmeljlhmhpnfphcpifdahblfmhlilm",
+//   "http://localhost:5173",
+//   "http://localhost:5174"
+// ];
+// var corsOptions = {
+//   origin: function (origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/auth", auth);
 app.use(aiml);
