@@ -9,28 +9,34 @@ const router = express.Router();
 router.use(bodyParser.urlencoded({extended: true}));
 
 var whitelist = [
-    "https://ao3-chrome-extension-website.vercel.app/",
-    "chrome-extension://nnmmeljlhmhpnfphcpifdahblfmhlilm",
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "*"
-  ];
-  var corsOptions = {
-    origin: function (origin, callback) {
-      console.log("Request Origin:", origin);
-      if (whitelist.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-  };
+  "https://ao3-chrome-extension-website.vercel.app/",
+  "chrome-extension://nnmmeljlhmhpnfphcpifdahblfmhlilm",
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "*"
+];
 
+var corsOptions = {
+origin: function (origin, callback) {
+  console.log("Request Origin:", origin);
+  if (whitelist.indexOf(origin) !== -1 || !origin) {
+    callback(null, true);
+  } else {
+    callback(new Error("Not allowed by CORS"));
+  }
+},
+methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow all required HTTP methods
+allowedHeaders: ['Content-Type', 'Authorization'], // Allow necessary headers
+credentials: true, // Allow credentials if needed (cookies, HTTP auth, etc.)
+};
+
+// Handle preflight requests for all routes
+router.options('*', cors(corsOptions));
 //login routes
 // router.get("/login", func.get_login); //use this when using the register file with backend
 router.post("/login", cors(corsOptions),func.post_login);
 router.post("/register", hashPassword,cors(corsOptions) ,func.post_register);
 router.get("/token/:token",func.get_token);
-router.get("/validate",cors(), verify_token,func.get_verify);
+router.get("/validate",cors(corsOptions), verify_token,func.get_verify);
 
 export default router;
