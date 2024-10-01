@@ -31,6 +31,6 @@ var whitelist = [
 router.post("/login", cors(corsOptions),func.post_login);
 router.post("/register", hashPassword,cors(corsOptions) ,func.post_register);
 router.get("/token/:token",func.get_token);
-router.get("/validate",cors(corsOptions), verify_token,func.get_verify);
+router.get("/validate",cors(), verify_token,func.get_verify);
 
 export default router;

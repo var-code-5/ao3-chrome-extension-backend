@@ -26,7 +26,7 @@ var whitelist = [
   };
 
 // api routes
-router.get('/recom', cors(corsOptions),verify_token, get_recommendations);
+router.get('/recom', cors(),verify_token, get_recommendations);
 // router.get("/test",(req,res)=>{res.send({"status":"ok"})});
 
 export default router;
