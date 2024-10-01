@@ -15,6 +15,7 @@ export const verify_token = async (req, res, next) => {
     }
 
     try {
+        console.log(req.headers.tokens);
         const tokens = JSON.parse(req.headers.tokens);
         const { accessToken, refreshToken } = tokens;
 
