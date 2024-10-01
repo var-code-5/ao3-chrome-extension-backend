@@ -17,8 +17,10 @@ export const verify_token = async (req, res, next) => {
     try {
         console.log(req.headers.tokens);
         let token = req.headers.tokens
-        token = JSON.stringify(token);
-        const tokens = JSON.parse(token);
+        if (typeof token === 'object') {
+            token = JSON.stringify(token);
+          }
+        const tokens = JSON.parse(req.headers.tokens);
         const { accessToken, refreshToken } = tokens;
 
         jwt.verify(accessToken, process.env.ACESS_TOKEN_SECRET, (err, decoded) => {
