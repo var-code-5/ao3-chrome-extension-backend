@@ -17,9 +17,7 @@ export const verify_token = async (req, res, next) => {
     try {
         console.log(req.headers.tokens);
         let token = req.headers.tokens
-        if (typeof token === 'object') {
-            token = JSON.stringify(token);
-          }
+        token = JSON.stringify(token);
         const tokens = JSON.parse(token);
         const { accessToken, refreshToken } = tokens;
 
