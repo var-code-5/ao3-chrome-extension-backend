@@ -167,3 +167,21 @@ export const get_token = (req, res) => {
 export const get_verify = (req, res) => {
   res.json({message:"success"});
 };
+
+export const patch_change_username = (req, res) => {
+  const id = req.body.id;
+  const new_username = req.body.new_username;
+
+  db.query("UPDATE login SET username = $1 WHERE id = $2;", [new_username, id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({message:"Server error"});
+      return;
+    } else if (result.rowCount === 0) {
+      res.status(404).json({message:"User not found"});
+      return;
+    } else {
+      res.status(200).json({message:"Username changed successfully"});
+    }
+  });
+}

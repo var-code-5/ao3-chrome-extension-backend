@@ -15,7 +15,7 @@ export const verify_token = async (req, res, next) => {
     }
 
     try {
-        console.log(req.headers.tokens);
+        // console.log(req.headers.tokens);
         let token = req.headers.tokens
         if (typeof token === 'object') {
             token = JSON.stringify(token);
@@ -33,10 +33,12 @@ export const verify_token = async (req, res, next) => {
                         const newAccessToken = generateAccessToken(refreshDecoded.id, refreshDecoded.username);
                         res.status(200).json({ accessToken: newAccessToken,refreshToken: refreshToken});
                         req.body.ao3_user = refreshDecoded.username;
+                        req.body.id = refreshDecoded.id;
                     }
                 });
             } else {
                 req.body.ao3_user = decoded.username;
+                req.body.id = decoded.id;
                 next();
             }
         });
