@@ -185,3 +185,20 @@ export const patch_change_username = (req, res) => {
     }
   });
 }
+
+export const get_username = (req, res) => {
+  const id = req.body.id;
+
+  db.query("SELECT * FROM login WHERE id = $1;", [id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({message:"Server error"});
+      return;
+    } else if (result.rowCount === 0) {
+      res.status(404).json({message:"User not found"});
+      return;
+    } else {
+      res.status(200).json({username: result.rows[0].username, email: result.rows[0].email});
+    }
+  });
+}

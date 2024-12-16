@@ -16,5 +16,6 @@ router.post("/register", hashPassword,func.post_register);
 router.get("/token/:token",func.get_token);
 router.get("/validate", verify_token,func.get_verify);
 router.patch("/update_username", verify_token,func.patch_change_username);
+router.get("/userdetail", verify_token,func.get_username);
 
 export default router;
